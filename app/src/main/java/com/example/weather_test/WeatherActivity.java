@@ -5,6 +5,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.weather_test.gson.ForeCast;
 import com.example.weather_test.gson.Weather;
+import com.example.weather_test.service.AutoUpdateService;
 import com.example.weather_test.util.HttpUtil;
 import com.example.weather_test.util.Utility;
 
@@ -177,6 +179,7 @@ public class WeatherActivity extends AppCompatActivity {
                                     getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather",responseText);
                             editor.apply();
+
                             showWeatherInfo(weather);
                         }else{
                             Log.d("Weather","解析错误" + weatherId);
@@ -268,6 +271,16 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+
+
+        //启动自动更新服务
+        if(weather != null && "ok".equals(weather.status)){
+            Intent intent = new Intent(this, AutoUpdateService.class);
+            startService(intent);
+        }else{
+            Toast.makeText(this,"获取天气信息失败",Toast
+            .LENGTH_SHORT).show();
+        }
 
     }
 }
